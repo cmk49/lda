@@ -74,7 +74,7 @@ class Word {
 	Word(String tok, int doc, int topic) {
 		token = tok;
 		docid = doc;
-		topicid = topicid;
+		topicid = topic;
 	}
 }
 
