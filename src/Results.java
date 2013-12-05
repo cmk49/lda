@@ -19,8 +19,8 @@ import org.mcavallo.opencloud.formatters.HTMLFormatter;
 public class Results {
 	
 	// topicID : list of most common words
-	private Map<Integer, HashMap<String, Integer>> topicToMostCommonWords = 
-			new HashMap<Integer, HashMap<String, Integer>>();
+	private Map<Integer, Map<String, Integer>> topicToMostCommonWords = 
+			new HashMap<Integer, Map<String, Integer>>();
 	// topicID : cloud of words
 	private Map<Integer, Cloud> wordClouds = new HashMap<Integer, Cloud>();
 	// documentID : word and topicID pairs
@@ -52,8 +52,23 @@ public class Results {
 			wordsInDoc.add(new WordTopicPair(word.token, word.topicid));
 			
 			//most common
-			
+			Map<String, Integer> wordCounts;
+			if (topicToMostCommonWords.containsKey(topicID)){
+				wordCounts = topicToMostCommonWords.get(topicID);
+			}
+			else{
+				wordCounts = new HashMap<String, Integer>();
+			}
+			int count = 0;
+			if (wordCounts.containsKey(word.token)){
+				count = wordCounts.get(word.token);
+			}
+			count++;
+			wordCounts.put(word.token, count);
+			topicToMostCommonWords.put(topicID, wordCounts);
 		}
+		
+		//TODO select highest values from topicToMostCommonWords
 	}
 	
 	public void generateWordCloud(int topicID) throws FileNotFoundException{
