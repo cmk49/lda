@@ -9,38 +9,39 @@ import java.util.Random;
 
 public class Corpus {
 	
+	private int numTopics;
+	private Random r;
 	private List<Word> words;
 	private Map<Integer, Integer> docs; // docid : doc size
 	private Map<Integer, Integer> topics;  // topicid : topic size
 	private Map<String, Map<Integer, Integer>> word_topics;  // word : (topicid : count)
-	private Map<Integer, Map<Integer, Integer>> topic_docs;  // topic : (docid : count)
+	private Map<Integer, Map<Integer, Integer>> doc_topics;  // docid : (topicid : count)
 
-	public Corpus() {
+	public Corpus(int numTopics) {
+		this.numTopics = numTopics;
 		words = new ArrayList<Word>();
 		docs = new HashMap<Integer, Integer>();
 		topics = new HashMap<Integer, Integer>();
 		word_topics = new HashMap<String, Map<Integer, Integer>>();
-		topic_docs = new HashMap<Integer, Map<Integer, Integer>>();
+		doc_topics = new HashMap<Integer, Map<Integer, Integer>>();
+		r = new Random();
 	}
 
-	public void addWord(Word w) {
+	private int randTopicId() {
+		return r.nextInt(numTopics);
+	}
+
+	public void addWord(String token, int docid) {
+		Word w = new Word(token, docid, this.randTopicId());
 		words.add(w);
 
 		// maintain doc lengths
-		if (docs.containsKey(w.docid)) {
-			Integer curVal = docs.get(w.docid);
-			docs.put(w.docid, curVal + 1);
-		} else {
-			docs.put(w.docid, 1);
-		}
+		this.changeMap(docs, w.docid, +1);
+		this.changeMap(doc_topics, w.docid, w.topicid, +1);
 
 		// maintain topic sizes
-		if (topics.containsKey(w.topicid)) {
-			Integer curVal = topics.get(w.topicid);
-			topics.put(w.topicid, curVal + 1);
-		} else {
-			topics.put(w.topicid, 1);
-		}
+		this.changeMap(topics, w.topicid, +1);
+		this.changeMap(word_topics, w.token, w.topicid, +1);
 	}
 
 	public Set<Integer> getDocIds() {
@@ -54,14 +55,21 @@ public class Corpus {
 	// assigns word i to topic j
 	public void assign(int i, int j) {
 		Word word = this.getWord(i);
+		String tok = word.token;
+		int k = word.topicid;
+		int d = word.docid;
 
 		// decrement counter for topic current assignment
-		this.changeMap(this.topics, word.topicid, -1);
+		this.changeMap(topics, k, -1);
+		this.changeMap(doc_topics, d, k, -1);
+		this.changeMap(word_topics, tok, k, -1);
 
 		words.get(i).topicid = j;
 
 		// increment counter for topic new assignment
-		this.changeMap(this.topics, j, +1);
+		this.changeMap(topics, j, +1);
+		this.changeMap(doc_topics, d, j, +1);
+		this.changeMap(word_topics, tok, j, +1);
 	}
 
 	// careful, these things are mutable.  Don't change the returned Word
@@ -69,12 +77,14 @@ public class Corpus {
 		return words.get(i);
 	}
 
+/*
 	public void assignAllRandom(int numTopics) {
 		Random r = new Random();
 		for(int k = 0; k < words.size(); k++) {
 			this.assign(k, r.nextInt(numTopics));
 		}
 	}
+*/
 
 	// changes the count of the map entry by delta
 	private void changeMap(Map<Integer, Integer> map, int key, int delta) {
@@ -105,8 +115,12 @@ public class Corpus {
 		if (!map.containsKey(key1)) {
 			map.put(key1, new HashMap<Integer, Integer>());
 		}
-
 		Map<Integer, Integer> innerMap = map.get(key1);
+
+		this.changeMap(innerMap, key2, delta);
+
+
+/*
 		if (innerMap.containsKey(key2)) {
 			curVal = innerMap.get(key2);
 		} 
@@ -114,6 +128,7 @@ public class Corpus {
 		int newVal = curVal + delta;
 		assert newVal >= 0;
 		innerMap.put(key2, curVal + delta);
+*/
 	}
 	
 	// changes count of nested maps
@@ -122,8 +137,10 @@ public class Corpus {
 		if (!map.containsKey(key1)) {
 			map.put(key1, new HashMap<Integer, Integer>());
 		}
-
 		Map<Integer, Integer> innerMap = map.get(key1);
+
+		this.changeMap(innerMap, key2, delta);
+/*
 		if (innerMap.containsKey(key2)) {
 			curVal = innerMap.get(key2);
 		} 
@@ -131,6 +148,7 @@ public class Corpus {
 		int newVal = curVal + delta;
 		assert newVal >= 0;
 		innerMap.put(key2, curVal + delta);
+*/
 	}
 
 	// reads a value out of the map or returns 0 if entries are undefined
