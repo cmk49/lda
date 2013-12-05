@@ -52,6 +52,7 @@ public class Results {
 			wordsInDoc.add(new WordTopicPair(word.token, word.topicid));
 			
 			//most common
+			
 		}
 	}
 	
@@ -59,13 +60,13 @@ public class Results {
 		HTMLFormatter formater = new HTMLFormatter();
 		Cloud cloud = wordClouds.get(topicID);
 		String htmlCode = formater.html(cloud);
-		PrintWriter writer = new PrintWriter("word-cloud-" + topicID + ".html");
+		PrintWriter writer = new PrintWriter("output/word-cloud-" + topicID + ".html");
 		writer.print(htmlCode);
 		writer.close();
 	}
 	
 	public void generateCodedDocument(int docID) throws IOException{
-		PrintWriter writer = new PrintWriter("colored-doc-" + docID + ".html");
+		PrintWriter writer = new PrintWriter("output/colored-doc-" + docID + ".html");
 		writer.println(htmlHeader());
 		Map<Integer, String> topicColors = getTopicColorAssignment(docID);
 		
