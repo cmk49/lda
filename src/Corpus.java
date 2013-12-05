@@ -27,6 +27,17 @@ public class Corpus {
 		r = new Random();
 	}
 
+	public int numWords() {
+		return this.words.size();
+	}
+
+	public int numTopics() {
+		return this.numTopics; }
+
+	public int numDocuments() {
+		return docs.keySet().size();
+	}
+
 	private int randTopicId() {
 		return r.nextInt(numTopics);
 	}
@@ -75,6 +86,28 @@ public class Corpus {
 	// careful, these things are mutable.  Don't change the returned Word
 	public Word getWord(int i) {
 		return words.get(i);
+	}
+
+	public int getTopicCount(int topicid) {
+		if (topics.containsKey(topicid)) {
+			return topics.get(topicid);
+		}
+		return 0;
+	}
+
+	public int getDocCount(int docid) {
+		if (docs.containsKey(docid)) {
+			return docs.get(docid);
+		}
+		return 0;
+	}
+
+	public int getWordTopicCount(String word, int topicid) {
+		return readMap(word_topics, word, topicid);
+	}
+
+	public int getDocTopicCount(int docid, int topicid) {
+		return readMap(doc_topics, docid, topicid);
 	}
 
 /*

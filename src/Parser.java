@@ -54,8 +54,9 @@ public class Parser {
 				word = word.toLowerCase();
 				if (word.length() < 2 || stopwords.contains(word))
 					continue;
-				Word w = new Word(word, currentDocumentID - 1, 0);
-				corpus.addWord(w);
+				//Word w = new Word(word, currentDocumentID - 1, 0);
+				//corpus.addWord(w);
+				corpus.addWord(word, currentDocumentID -1);
 			}
 		}
 		in.close();
