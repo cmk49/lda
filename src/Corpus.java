@@ -49,7 +49,19 @@ public class Corpus {
 
 	// assigns word i to topic j
 	public void assign(int i, int j) {
+		Word word = this.getWord(i);
+
+		// decrement counter for topic current assignment
+		int curTopic = word.topicid;
+		int curCount = topicids.get(curTopic);
+		assert curCount > 0;
+		topicids.put(curTopic, curCount -1); 
+
 		words.get(i).topicid = j;
+
+		// increment counter for topic new assignment
+		curCount = topicids.get(j);
+		topicids.put(j, curCount + 1);
 	}
 
 	// careful, these things are mutable.  Don't change the returned Word
