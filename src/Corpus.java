@@ -93,11 +93,67 @@ public class Corpus {
 		if (map.containsKey(key)) {
 			curVal = map.get(key);
 		}
+
 		int newVal = curVal + delta;
 		assert newVal >= 0;
 		map.put(key, curVal + delta);
 	}
+
+	// changes count of nested maps
+	private void changeMap(Map<String, Map<Integer, Integer>> map, String key1, int key2, int delta) {
+		int curVal = 0;
+		if (!map.containsKey(key1)) {
+			map.put(key1, new HashMap<Integer, Integer>());
+		}
+
+		Map<Integer, Integer> innerMap = map.get(key1);
+		if (innerMap.containsKey(key2)) {
+			curVal = innerMap.get(key2);
+		} 
+
+		int newVal = curVal + delta;
+		assert newVal >= 0;
+		innerMap.put(key2, curVal + delta);
+	}
 	
+	// changes count of nested maps
+	private void changeMap(Map<Integer, Map<Integer, Integer>> map, int key1, int key2, int delta) {
+		int curVal = 0;
+		if (!map.containsKey(key1)) {
+			map.put(key1, new HashMap<Integer, Integer>());
+		}
+
+		Map<Integer, Integer> innerMap = map.get(key1);
+		if (innerMap.containsKey(key2)) {
+			curVal = innerMap.get(key2);
+		} 
+
+		int newVal = curVal + delta;
+		assert newVal >= 0;
+		innerMap.put(key2, curVal + delta);
+	}
+
+	// reads a value out of the map or returns 0 if entries are undefined
+	private int readMap(Map<String, Map<Integer, Integer>> map, String key1, int key2) {
+		if (map.containsKey(key1)) {
+			Map<Integer, Integer> innerMap = map.get(key1);
+			if (innerMap.containsKey(key2)) {
+				return innerMap.get(key2);
+			}
+		}
+		return 0;
+	}
+
+	// reads a value out of the map or returns 0 if entries are undefined
+	private int readMap(Map<Integer, Map<Integer, Integer>> map, int key1, int key2) {
+		if (map.containsKey(key1)) {
+			Map<Integer, Integer> innerMap = map.get(key1);
+			if (innerMap.containsKey(key2)) {
+				return innerMap.get(key2);
+			}
+		}
+		return 0;
+	}
 }
 
 class Word {
