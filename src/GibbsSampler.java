@@ -1,5 +1,6 @@
 
 import java.util.Random;
+import org.apache.commons.math3.special.Gamma;
 
 
 public class GibbsSampler {
@@ -96,8 +97,25 @@ public class GibbsSampler {
 	}
 
 	// computes the log data likelihood given the current topic assignments
+	// actually computes the log of a value proportional to the data likelihood
 	double logDataLikelihood() {
-		return Double.MIN_VALUE;
+		double logLikelihood = 0;
+		for (int topicId = 0; topicId < this.numTopics; topicId++) {
+			double numer = 0; // it's in the numerator in the unlogged equation
+			for (int wordIdx = 0; wordIdx < this.numWords; wordIdx++) {
+				Word w = corpus.getWord(wordIdx);
+				int wordTopicCount = corpus.getWordTopicCount(w.token, topicId);
+				double arg = wordTopicCount + this.beta;
+				double value = Gamma.logGamma(arg);
+				numer += value;
+			}
+			int topicCount = corpus.getTopicCount(topicId);
+			double denum_arg = topicCount + this.numWords * this.beta;
+			double denum_value = Gamma.logGamma(denum_arg);
+
+			logLikelihood += (numer - denum_value);
+		}
+		return logLikelihood;
 	}
 }
 
