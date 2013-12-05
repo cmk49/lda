@@ -10,7 +10,7 @@ import java.util.HashSet;
 public class Parser {
 	
 	private HashSet<String> stopwords = new HashSet<String>();
-	private ArrayList<String> documentPaths = new ArrayList<String>();
+	private static ArrayList<String> documentPaths = new ArrayList<String>();
 	private int currentDocumentID = 0;
 	private Corpus corpus;
 	
@@ -60,5 +60,9 @@ public class Parser {
 			}
 		}
 		in.close();
+	}
+	
+	public static String getDocumentPath(int docID){
+		return documentPaths.get(docID);
 	}
 }
