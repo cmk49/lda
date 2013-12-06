@@ -27,7 +27,7 @@ public class Results {
 	private Map<Integer, ArrayList<WordTopicPair>> codedDocument = 
 			new HashMap<Integer, ArrayList<WordTopicPair>>(); 
 	
-	public Results(Word[] words){
+	public Results(List<Word> words){
 		for (Word word : words){
 			//word cloud
 			int topicID = word.topicid;
@@ -39,6 +39,7 @@ public class Results {
 				cloud = wordClouds.get(topicID);
 			}
 			cloud.addTag(word.token);
+			wordClouds.put(topicID, cloud);
 			
 			//document coding
 			int documentID = word.docid;
@@ -50,6 +51,7 @@ public class Results {
 				wordsInDoc = codedDocument.get(documentID);
 			}
 			wordsInDoc.add(new WordTopicPair(word.token, word.topicid));
+			codedDocument.put(documentID, wordsInDoc);
 			
 			//most common
 			Map<String, Integer> wordCounts;

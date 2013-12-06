@@ -88,6 +88,10 @@ public class Corpus {
 		return words.get(i);
 	}
 
+	public List<Word> getWords(){
+		return this.words;
+	}
+	
 	public int getTopicCount(int topicid) {
 		if (topics.containsKey(topicid)) {
 			return topics.get(topicid);

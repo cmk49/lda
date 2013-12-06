@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
@@ -25,8 +26,21 @@ public class Main {
 			e.printStackTrace();
 		}
 		GibbsSampler sampler = new GibbsSampler(corpus, alpha, beta);
-		sampler.go(numIters);
+		sampler.go(0);
 		System.out.println("Finished loading documents");
+		Results results = new Results(corpus.getWords());
+		try {
+			results.generateCodedDocument(0);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			results.generateWordCloud(0);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	static void parseArgs(String[] args) {
