@@ -37,7 +37,6 @@ public class Parser {
 	private void loadStopWords() throws IOException{
 		File file = new File("stop-words.txt");
 		BufferedReader in = new BufferedReader(new FileReader(file));
-		documentPaths.add(currentDocumentID++, file.getPath());
 		String line;
 		while (null != (line = in.readLine())){
 			stopwords.add(line.trim().toLowerCase());

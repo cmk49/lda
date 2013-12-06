@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.mcavallo.opencloud.Cloud;
+import org.mcavallo.opencloud.Tag;
 import org.mcavallo.opencloud.formatters.HTMLFormatter;
 
 
@@ -72,15 +73,19 @@ public class Results {
 			Map<String,Integer> wordCounts = topicToMostCommonWords.get(topicId);
 			StrValueComparator bvc = new StrValueComparator(wordCounts);
 			TreeMap<String,Integer> sorted_map = new TreeMap<String,Integer>(bvc);
+			sorted_map.putAll(wordCounts);
 
 			//cloud stuff
 
 			Cloud cloud = new Cloud();
+			cloud.setMaxWeight(100.0);
+			cloud.setDefaultLink("https://lds.org");
+			cloud.setMaxTagsToDisplay(20);
 			int N = 20;
 			int count = 0;
 			for (String str : sorted_map.keySet()){
 				commonWords.add(str);
-				cloud.addTag(word.token);
+				cloud.addTag(new Tag(str, wordCounts.get(str)));
 
 				if (count++ > N) break;
 			}
@@ -104,11 +109,17 @@ public class Results {
 	public void generateWordCloud(int topicID) throws FileNotFoundException{
 		HTMLFormatter formater = new HTMLFormatter();
 		Cloud cloud = wordClouds.get(topicID);
+		//List<Tag> tags = cloud.tags();
+		try {
 		String htmlCode = formater.html(cloud);
 		String filepath = this.dirPath + "word-cloud-" + topicID + ".html";
 		PrintWriter writer = new PrintWriter(filepath);
 		writer.print(htmlCode);
 		writer.close();
+		}
+		catch (Exception e){
+			System.out.println("Could not create word cloud for topic ID: " + topicID + "\n");
+		}
 	}
 	
 	public void generateCodedDocument(int docID) throws IOException{
@@ -123,7 +134,7 @@ public class Results {
 		String line;
 		StringBuilder document = new StringBuilder();
 		while (null != (line = reader.readLine())){
-			document.append(line);			
+			document.append(line + "\n");			
 		}
 		reader.close();
 		String[] words = document.toString().split("[ \\t\\n\\r]"); //split on whitespace
@@ -133,7 +144,8 @@ public class Results {
 		int codedIndex = 0;
 		for (String word : words){
 			String color = "";
-			while (word.toLowerCase().contains(codedWords.get(codedIndex).word)){
+			while (codedIndex < codedWords.size() && 
+					word.toLowerCase().contains(codedWords.get(codedIndex).word)){
 				color = topicColors.get(codedWords.get(codedIndex).topicID);
 				codedIndex++;
 			}
@@ -141,7 +153,7 @@ public class Results {
 				writer.print(word + " ");
 			}
 			else {
-				writer.print("<span class='" + color +"'> " + word + "</span>");
+				writer.print("<span class='" + color +"'>" + word + "</span>&nbsp;");
 			}
 		}
 		writer.println(htmlFooter());
@@ -159,6 +171,8 @@ public class Results {
 		}
 		ValueComparator bvc =  new ValueComparator(topicCounts);
         TreeMap<Integer,Integer> sorted_map = new TreeMap<Integer,Integer>(bvc);
+        sorted_map.putAll(topicCounts);
+        
 		Map<Integer, String> topicColors = new HashMap<Integer, String>();
 		int i = 0;
         for (int topicID : sorted_map.keySet()){
