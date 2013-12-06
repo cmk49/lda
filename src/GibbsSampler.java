@@ -52,9 +52,13 @@ public class GibbsSampler {
 		}
 
 		// normalize the weights to form a well defined prob distribution
+		double sum = 0.0;
 		for (int topicId = 0; topicId < numTopics; topicId++) {
 			probs[topicId] /= totalWeight;
+			sum += probs[topicId];
 		}
+
+		assert(Math.abs(sum - 1.0) < 1e-6);
 
 		return categorical(probs);
 	}

@@ -17,6 +17,20 @@ public class Corpus {
 	private Map<String, Map<Integer, Integer>> word_topics;  // word : (topicid : count)
 	private Map<Integer, Map<Integer, Integer>> doc_topics;  // docid : (topicid : count)
 
+	static Corpus getDummy() {
+		Corpus dummy = new Corpus(2);
+		String[] doc0 = {"kitten", "cat", "milk", "purr", "kitten", "cat", "cat", "purr", "kitten" };
+		String[] doc1 = {"dairy", "milk", "milk", "milk", "milk", "diary", "farmer", "farmer", "kitten" };
+		String[] doc2 = {"cat", "cat", "milk", "purr", "purr", "cat", "cat", "milk", "kitten" };
+
+		for(int k=0; k < doc0.length; k++) {
+			dummy.addWord(doc0[k], 0);
+			dummy.addWord(doc1[k], 1);
+			dummy.addWord(doc2[k], 2);
+		}
+		return dummy;
+	}
+
 	public Corpus(int numTopics) {
 		this.numTopics = numTopics;
 		words = new ArrayList<Word>();
@@ -119,15 +133,6 @@ public class Corpus {
 		return readMap(doc_topics, docid, topicid);
 	}
 
-/*
-	public void assignAllRandom(int numTopics) {
-		Random r = new Random();
-		for(int k = 0; k < words.size(); k++) {
-			this.assign(k, r.nextInt(numTopics));
-		}
-	}
-*/
-
 	// changes the count of the map entry by delta
 	private void changeMap(Map<Integer, Integer> map, int key, int delta) {
 		int curVal = 0;
@@ -160,17 +165,6 @@ public class Corpus {
 		Map<Integer, Integer> innerMap = map.get(key1);
 
 		this.changeMap(innerMap, key2, delta);
-
-
-/*
-		if (innerMap.containsKey(key2)) {
-			curVal = innerMap.get(key2);
-		} 
-
-		int newVal = curVal + delta;
-		assert newVal >= 0;
-		innerMap.put(key2, curVal + delta);
-*/
 	}
 	
 	// changes count of nested maps
@@ -182,15 +176,6 @@ public class Corpus {
 		Map<Integer, Integer> innerMap = map.get(key1);
 
 		this.changeMap(innerMap, key2, delta);
-/*
-		if (innerMap.containsKey(key2)) {
-			curVal = innerMap.get(key2);
-		} 
-
-		int newVal = curVal + delta;
-		assert newVal >= 0;
-		innerMap.put(key2, curVal + delta);
-*/
 	}
 
 	// reads a value out of the map or returns 0 if entries are undefined
