@@ -49,6 +49,8 @@ public class Parser {
 		BufferedReader in = new BufferedReader(new FileReader(file));
 		documentPaths.add(currentDocumentID++, file.getPath());
 		String line;
+		while (null != (line = in.readLine()) && line.length() != 0) {
+		}
 		while (null != (line = in.readLine())){
 			for (String word : line.split("[\\p{P} \\t\\n\\r]")){
 				word = word.toLowerCase();
