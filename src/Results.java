@@ -81,7 +81,7 @@ public class Results {
 			cloud.setMaxWeight(100.0);
 			cloud.setDefaultLink("https://lds.org");
 			cloud.setMaxTagsToDisplay(20);
-			int N = 20;
+			int N = 10000;
 			int count = 0;
 			for (String str : sorted_map.keySet()){
 				commonWords.add(str);
@@ -100,7 +100,9 @@ public class Results {
 		PrintWriter writer = new PrintWriter(filepath);
 		List<String> words = sortedWords.get(topicId);
 		for (int k = 0; k < nWords && k < words.size(); k++) {
-			writer.print(words.get(k));
+			String word = words.get(k);
+			Integer count = topicToMostCommonWords.get(topicId).get(word);
+			writer.print(word + " " + count);
 			writer.print("\n");
 		}
 		writer.close();

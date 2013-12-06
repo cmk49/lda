@@ -26,13 +26,13 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Finished loading documents");
+		//System.out.println("Finished loading documents");
 		GibbsSampler sampler = new GibbsSampler(corpus, alpha, beta);
 		corpus = sampler.go(numIters);
 		//corpus = sampler.go(5);
 		try {
 			Results result = new Results(corpus.getAllWords(), outputPath);
-			for (int topicId = 0; topicId < numIters; topicId++) {
+			for (int topicId = 0; topicId < numTopics; topicId++) {
 				result.generateNWords(topicId, 10);
 				result.generateCodedDocument(topicId);
 				result.generateWordCloud(topicId); // I really don't want all of them...

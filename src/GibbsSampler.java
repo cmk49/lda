@@ -67,14 +67,15 @@ public class GibbsSampler {
 		int wordTopicCount = corpus.getWordTopicCount(w.token, topicId);
 		int docTopicCount = corpus.getDocTopicCount(w.docid, topicId);
 		int topicCount = corpus.getTopicCount(topicId);
-		int docCount = corpus.getDocCount(w.docid);
+		int docCount = corpus.getDocCount(w.docid); 
 
 		// calculate terms of the equation
 		double numer1 = wordTopicCount + this.beta - leaveOutCurrent;
 		double denum1 = topicCount + (this.beta * this.numWords) - leaveOutCurrent;
 
 		double numer2 = docTopicCount + this.alpha - leaveOutCurrent;
-		double denum2 = docCount - 1;  // whatever w's topic, it is part of the document
+		double denum2 = docCount - 1 + (this.numTopics * this.alpha);
+			// whatever w's topic, it is part of the document
 
 		// calculate result
 		double result = (numer1 / denum1) * (numer2 / denum2);
@@ -93,7 +94,6 @@ public class GibbsSampler {
 		}
 		// we shouldn't ever reach here if we are given a well defined distribution
 		return probs.length-1;
-
 	}
 
 	// computes the log data likelihood given the current topic assignments
