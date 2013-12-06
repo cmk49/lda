@@ -27,6 +27,11 @@ public class Corpus {
 		r = new Random();
 	}
 
+	public Word[] getAllWords() {
+		Word[] tmp = new Word[1];  // signifys the return type of toArray
+		return words.toArray(tmp);
+	}
+
 	public int numWords() {
 		return this.words.size();
 	}

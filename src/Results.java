@@ -21,19 +21,24 @@ public class Results {
 	// topicID : list of most common words
 	private Map<Integer, Map<String, Integer>> topicToMostCommonWords = 
 			new HashMap<Integer, Map<String, Integer>>();
+	private Map<Integer, List<String>> sortedWords = new HashMap<Integer, List<String>>();
 	// topicID : cloud of words
 	private Map<Integer, Cloud> wordClouds = new HashMap<Integer, Cloud>();
 	// documentID : word and topicID pairs
 	private Map<Integer, ArrayList<WordTopicPair>> codedDocument = 
 			new HashMap<Integer, ArrayList<WordTopicPair>>(); 
+
+	private String dirPath;
 	
-	public Results(Word[] words){
+	public Results(Word[] words, String dirPath){
+		this.dirPath = dirPath;
 		for (Word word : words){
 			//word cloud
 			int topicID = word.topicid;
 			Cloud cloud;
 			if (!wordClouds.containsKey(topicID)){
 				cloud = new Cloud();
+				wordClouds.put(topicID, cloud);
 			}
 			else {
 				cloud = wordClouds.get(topicID);
@@ -67,21 +72,45 @@ public class Results {
 			wordCounts.put(word.token, count);
 			topicToMostCommonWords.put(topicID, wordCounts);
 		}
-		
 		//TODO select highest values from topicToMostCommonWords
+
+		for (Integer topicId : topicToMostCommonWords.keySet()) {
+			List<String> commonWords = new ArrayList<String>();
+			// hope this is how it works
+			Map<String,Integer> wordCounts = topicToMostCommonWords.get(topicId);
+			StrValueComparator bvc =  new StrValueComparator(wordCounts);
+			TreeMap<String,Integer> sorted_map = new TreeMap<String,Integer>(bvc);
+			for (String str : sorted_map.keySet()){
+				commonWords.add(str);
+			}
+			sortedWords.put(topicId, commonWords);
+		}
+	}
+
+	public void generateNWords(int topicId, int nWords) throws FileNotFoundException{
+		String filepath = this.dirPath + "" + nWords + "-words-" + topicId + ".txt";
+		PrintWriter writer = new PrintWriter(filepath);
+		List<String> words = sortedWords.get(topicId);
+		for (int k = 0; k < nWords && k < words.size(); k++) {
+			writer.print(words.get(k));
+			writer.print("\n");
+		}
+		writer.close();
 	}
 	
 	public void generateWordCloud(int topicID) throws FileNotFoundException{
 		HTMLFormatter formater = new HTMLFormatter();
 		Cloud cloud = wordClouds.get(topicID);
 		String htmlCode = formater.html(cloud);
-		PrintWriter writer = new PrintWriter("output/word-cloud-" + topicID + ".html");
+		String filepath = this.dirPath + "word-cloud-" + topicID + ".html";
+		PrintWriter writer = new PrintWriter(filepath);
 		writer.print(htmlCode);
 		writer.close();
 	}
 	
 	public void generateCodedDocument(int docID) throws IOException{
-		PrintWriter writer = new PrintWriter("output/colored-doc-" + docID + ".html");
+		String filepath = this.dirPath + "colored-doc-" + docID + ".html";
+		PrintWriter writer = new PrintWriter(filepath);
 		writer.println(htmlHeader());
 		Map<Integer, String> topicColors = getTopicColorAssignment(docID);
 		
@@ -163,6 +192,23 @@ class ValueComparator implements Comparator<Integer> {
 
     // Note: this comparator imposes orderings that are inconsistent with equals.    
     public int compare(Integer a, Integer b) {
+        if (base.get(a) >= base.get(b)) {
+            return -1;
+        } else {
+            return 1;
+        } // returning 0 would merge keys
+    }
+}
+
+class StrValueComparator implements Comparator<String> {
+
+    Map<String, Integer> base;
+    public StrValueComparator(Map<String, Integer> base) {
+        this.base = base;
+    }
+
+    // Note: this comparator imposes orderings that are inconsistent with equals.    
+    public int compare(String a, String b) {
         if (base.get(a) >= base.get(b)) {
             return -1;
         } else {

@@ -7,16 +7,17 @@ public class Main {
 	static int numIters = 1;
 	static double alpha = 1.0;
 	static double beta = 1.0;
-	static String corpusPath = "./gc";
+	static String outputPath = "output/"; // must end in a slash
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		//System.out.println(java.util.Arrays.toString(args));
 
 		parseArgs(args);
+		//System.out.println(outputPath);
 
-		// TODO: make corpus path a parameter
 		Corpus corpus = new Corpus(numTopics);
 		Parser parser = new Parser(corpus);
 		try {
@@ -24,9 +25,19 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		GibbsSampler sampler = new GibbsSampler(corpus, alpha, beta);
-		sampler.go(numIters);
 		System.out.println("Finished loading documents");
+		GibbsSampler sampler = new GibbsSampler(corpus, alpha, beta);
+		corpus = sampler.go(numIters);
+		try {
+			Results result = new Results(corpus.getAllWords(), outputPath);
+			for (int topicId = 0; topicId < numTopics; topicId++) {
+				result.generateNWords(topicId, 10);
+				//result.generateWordCloud(topicId);
+				//result.generateCodedDocument(topicId); // I really don't want all of them...
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	static void parseArgs(String[] args) {
@@ -34,7 +45,7 @@ public class Main {
 		if (args.length >= 2) numIters = Integer.parseInt(args[1]);
 		if (args.length >= 3) alpha = Double.parseDouble(args[2]);
 		if (args.length >= 4) beta = Double.parseDouble(args[3]);
-		if (args.length >= 5) corpusPath = args[4];
+		if (args.length >= 5) outputPath = args[4];
 	}
 
 }
