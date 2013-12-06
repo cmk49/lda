@@ -35,16 +35,6 @@ public class Results {
 		for (Word word : words){
 			//word cloud
 			int topicID = word.topicid;
-			Cloud cloud;
-			if (!wordClouds.containsKey(topicID)){
-				cloud = new Cloud();
-				wordClouds.put(topicID, cloud);
-			}
-			else {
-				cloud = wordClouds.get(topicID);
-			}
-			cloud.addTag(word.token);
-			wordClouds.put(topicID, cloud);
 			
 			//document coding
 			int documentID = word.docid;
@@ -80,11 +70,22 @@ public class Results {
 			List<String> commonWords = new ArrayList<String>();
 			// hope this is how it works
 			Map<String,Integer> wordCounts = topicToMostCommonWords.get(topicId);
-			StrValueComparator bvc =  new StrValueComparator(wordCounts);
+			StrValueComparator bvc = new StrValueComparator(wordCounts);
 			TreeMap<String,Integer> sorted_map = new TreeMap<String,Integer>(bvc);
+
+			//cloud stuff
+
+			Cloud cloud = new Cloud();
+			int N = 20;
+			int count = 0;
 			for (String str : sorted_map.keySet()){
 				commonWords.add(str);
+				cloud.addTag(word.token);
+
+				if (count++ > N) break;
 			}
+
+			wordClouds.put(topicId, cloud);
 			sortedWords.put(topicId, commonWords);
 		}
 	}
