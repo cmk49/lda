@@ -44,6 +44,7 @@ public class Results {
 				cloud = wordClouds.get(topicID);
 			}
 			cloud.addTag(word.token);
+			wordClouds.put(topicID, cloud);
 			
 			//document coding
 			int documentID = word.docid;
@@ -55,6 +56,7 @@ public class Results {
 				wordsInDoc = codedDocument.get(documentID);
 			}
 			wordsInDoc.add(new WordTopicPair(word.token, word.topicid));
+			codedDocument.put(documentID, wordsInDoc);
 			
 			//most common
 			Map<String, Integer> wordCounts;

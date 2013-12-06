@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
@@ -27,12 +28,13 @@ public class Main {
 		}
 		System.out.println("Finished loading documents");
 		GibbsSampler sampler = new GibbsSampler(corpus, alpha, beta);
-		corpus = sampler.go(numIters);
+		//corpus = sampler.go(numIters);
+		corpus = sampler.go(0);
 		try {
 			Results result = new Results(corpus.getAllWords(), outputPath);
 			for (int topicId = 0; topicId < numTopics; topicId++) {
-				result.generateNWords(topicId, 10);
-				//result.generateWordCloud(topicId);
+				//result.generateNWords(topicId, 10);
+				result.generateWordCloud(topicId);
 				//result.generateCodedDocument(topicId); // I really don't want all of them...
 			}
 		} catch (IOException e) {
